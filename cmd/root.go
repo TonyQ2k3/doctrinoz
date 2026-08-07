@@ -1,30 +1,21 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
 	"os"
 
+	"github.com/TonyQ2k3/doctrinoz/internal/config"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-
+var configFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "doctrinoz",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Short: "Agent-optimized wiki generator for code repositories.",
+	Long: `Doctrinoz automatically generates and maintains AGENT.md that provides context for AI coding agents.
+The tool uses git-aware incremental updates to keep documentations fresh without re-generating everything.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -37,15 +28,16 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default: .doc.yaml)")
+	rootCmd.PersistentFlags().String("provider", "openrouter", "AI model provider")
+	rootCmd.PersistentFlags().String("model", "", "Model to use for content generation")
+	rootCmd.PersistentFlags().String("api-key", "", "API Key for model provider")
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output")
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.doctrinoz.yaml)")
+	viper.BindPFlag("provider", rootCmd.PersistentFlags().Lookup("provider"))
+	viper.BindPFlag("model", rootCmd.PersistentFlags().Lookup("model"))
+	viper.BindPFlag("api_key", rootCmd.PersistentFlags().Lookup("api-key"))
+	viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	cobra.OnInitialize(func() { config.Init(configFile) })
 }
-
-
