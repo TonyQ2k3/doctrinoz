@@ -32,8 +32,8 @@ go.work.sum
 # .vscode/
 
 # wiki state
-.doctrinoz
-.doctrinoz.yaml
+.doc
+.doc.yaml
 
 # Generated mds
 **/AGENT.md
