@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	stateDir  = ".doctrinoz"
-	stateFile = ".doctrinoz/state.json"
+	stateDir  = ".doc"
+	stateFile = ".doc/state.json"
 )
 
 // ── Init ─────────────────────────────────────────────────────────────────────
@@ -33,8 +33,8 @@ func Init(repoPath string, cfg *config.Config) error {
 		return fmt.Errorf("creating state dir: %w", err)
 	}
 
-	// Write .doctrinoz.yaml if absent.
-	configPath := filepath.Join(repoPath, ".doctrinoz.yaml")
+	// Write .doc.yaml if absent.
+	configPath := filepath.Join(repoPath, ".doc.yaml")
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		defaultConfig := fmt.Sprintf(`# doctrinoz configuration
 provider: %s
@@ -53,10 +53,10 @@ ignore_patterns:
 		if err := os.WriteFile(configPath, []byte(defaultConfig), 0o644); err != nil {
 			return fmt.Errorf("writing config: %w", err)
 		}
-		color.Green("✓ Created .doctrinoz.yaml")
+		color.Green("✓ Created .doc.yaml")
 	}
 
-	// Add .doctrinoz to .gitignore.
+	// Add .doc to .gitignore.
 	gitignorePath := filepath.Join(repoPath, ".gitignore")
 	appendToGitignore(gitignorePath, stateDir)
 
