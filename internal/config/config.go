@@ -32,7 +32,7 @@ var ProviderDefaults = map[string]struct {
 }{
 	"openrouter": {
 		Model:   "openrouter/free",
-		BaseURL: "",
+		BaseURL: "https://openrouter.ai/api/v1",
 		EnvKey:  "",
 	},
 }

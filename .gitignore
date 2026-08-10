@@ -34,3 +34,6 @@ go.work.sum
 # wiki state
 .doctrinoz
 .doctrinoz.yaml
+
+# Generated mds
+**/AGENT.md
