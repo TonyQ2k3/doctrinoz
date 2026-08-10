@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	stateDir  = ".repowiki"
-	stateFile = ".repowiki/state.json"
+	stateDir  = ".doctrinoz"
+	stateFile = ".doctrinoz/state.json"
 )
 
 // ── Init ─────────────────────────────────────────────────────────────────────
@@ -33,10 +33,10 @@ func Init(repoPath string, cfg *config.Config) error {
 		return fmt.Errorf("creating state dir: %w", err)
 	}
 
-	// Write .repowiki.yaml if absent.
-	configPath := filepath.Join(repoPath, ".repowiki.yaml")
+	// Write .doctrinoz.yaml if absent.
+	configPath := filepath.Join(repoPath, ".doctrinoz.yaml")
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		defaultConfig := fmt.Sprintf(`# repowiki configuration
+		defaultConfig := fmt.Sprintf(`# doctrinoz configuration
 provider: %s
 model: %s
 max_tokens: 4096
@@ -53,15 +53,15 @@ ignore_patterns:
 		if err := os.WriteFile(configPath, []byte(defaultConfig), 0o644); err != nil {
 			return fmt.Errorf("writing config: %w", err)
 		}
-		color.Green("✓ Created .repowiki.yaml")
+		color.Green("✓ Created .doctrinoz.yaml")
 	}
 
-	// Add .repowiki to .gitignore.
+	// Add .doctrinoz to .gitignore.
 	gitignorePath := filepath.Join(repoPath, ".gitignore")
 	appendToGitignore(gitignorePath, stateDir)
 
-	color.Green("✓ repowiki initialised in %s", repoPath)
-	color.Cyan("  Run 'repowiki generate' to create the initial wiki.")
+	color.Green("✓ doctrinoz initialised in %s", repoPath)
+	color.Cyan("  Run 'doctrinoz generate' to create the initial wiki.")
 	return nil
 }
 
@@ -250,7 +250,7 @@ func Status(repoPath string, cfg *config.Config) error {
 			state.LastCommit[:12],
 			state.GeneratedAt.Format("2006-01-02 15:04"))
 	} else {
-		color.Yellow("Wiki has not been generated yet — run 'repowiki generate'")
+		color.Yellow("Wiki has not been generated yet — run 'doctrinoz generate'")
 		return nil
 	}
 
@@ -279,7 +279,7 @@ func Status(repoPath string, cfg *config.Config) error {
 	for _, m := range affected {
 		fmt.Printf("  - %s/AGENT.md\n", m.Path)
 	}
-	color.Cyan("  Run 'repowiki update' to refresh.")
+	color.Cyan("  Run 'doctrinoz update' to refresh.")
 	return nil
 }
 
@@ -361,7 +361,7 @@ func appendToGitignore(gitignorePath, entry string) {
 		f, err := os.OpenFile(gitignorePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 		if err == nil {
 			defer f.Close()
-			f.WriteString("\n# repowiki state\n" + entry + "\n")
+			f.WriteString("\n# doctrinoz state\n" + entry + "\n")
 		}
 	}
 }

@@ -52,7 +52,7 @@ type openRouterResponse struct {
 
 func (p *OpenRouterProvider) Complete(ctx context.Context, req CompletionRequest) (string, error) {
 	if p.cfg.APIKey == "" {
-		return "", fmt.Errorf("OpenRouter API key not set - use --api-key, REPOWIKIAPIKEY, or OPENROUTER")
+		return "", fmt.Errorf("OpenRouter API key not set - use --api-key, DOCTRINOZ_API_KEY, or OPENROUTER")
 	}
 
 	msgs := make([]openRouterMsg, len(req.Messages))
