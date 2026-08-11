@@ -12,7 +12,7 @@ var path string
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init [path]",
-	Short: "Initialise documentation for a code repository",
+	Short: "Initialise state files and prepare for doc generation",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		repoPath := "."

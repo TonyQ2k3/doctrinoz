@@ -9,7 +9,7 @@ import (
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
 	Use:   "update [path]",
-	Short: "Incremental update based on git diff",
+	Short: "Incrementally update a documentation based on git diff",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		repoPath := "."

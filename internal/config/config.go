@@ -43,7 +43,7 @@ func Init(cfgFile string) {
 		viper.SetConfigFile(cfgFile)
 	} else {
 		viper.AddConfigPath(".")
-		viper.SetConfigName(".config")
+		viper.SetConfigName(".doc")
 		viper.SetConfigType("yaml")
 	}
 
@@ -111,7 +111,7 @@ func Load() (*Config, error) {
 
 func defaultIgnorePatterns() []string {
 	return []string{
-		"node_modules/", ".git/", "dist/", "build/", ".config.yaml",
+		"node_modules/", ".git/", "dist/", "build/", ".doc.yaml",
 	}
 }
 
@@ -122,7 +122,7 @@ func SetKey(provider, key string) error {
 	}
 
 	viper.Set(fmt.Sprintf("keys.%s", provider), key)
-	path := ".config.yaml"
+	path := ".doc.yaml"
 
 	if err := viper.WriteConfigAs(path); err != nil {
 		return fmt.Errorf("Writing config: %w", err)
