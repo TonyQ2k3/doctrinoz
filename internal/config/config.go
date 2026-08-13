@@ -132,6 +132,38 @@ func SetKey(provider, key string) error {
 	return nil
 }
 
+func SetProvider(providerName string) error {
+	if _, ok := ProviderDefaults[providerName]; !ok {
+		return fmt.Errorf(`unknown provider: %s
+accepted providers are:
+  - openrouter
+  - openai
+  - anthropic`, providerName)
+	}
+
+	path := ".doc.yaml"
+	viper.Set("provider", providerName)
+
+	if err := viper.WriteConfigAs(path); err != nil {
+		return fmt.Errorf("Writing config: %w", err)
+	}
+
+	color.Green("Provider saved to %s", path)
+	return nil
+}
+
+func SetModel(modelName string) error {
+	path := ".doc.yaml"
+	viper.Set("model", modelName)
+
+	if err := viper.WriteConfigAs(path); err != nil {
+		return fmt.Errorf("Writing config: %w", err)
+	}
+
+	color.Green("Model saved to %s", path)
+	return nil
+}
+
 func (c *Config) Print() {
 	bold := color.New(color.Bold)
 	bold.Println("Resolved configuration: ")

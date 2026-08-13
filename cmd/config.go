@@ -14,7 +14,7 @@ var configCmd = &cobra.Command{
 	Short: "Manage configurations",
 }
 
-var listCmd = &cobra.Command{
+var configListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all configurations",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -27,7 +27,35 @@ var listCmd = &cobra.Command{
 	},
 }
 
+var configSetCmd = &cobra.Command{
+	Use:   "set",
+	Short: "Set a configuration value",
+}
+
+var configSetProviderCmd = &cobra.Command{
+	Use:   "provider <name>",
+	Short: "Set your model provider",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return config.SetProvider(args[0])
+	},
+}
+
+var configSetModelCmd = &cobra.Command{
+	Use:   "model <name>",
+	Short: "Set your model used for doc generation",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return config.SetModel(args[0])
+	},
+}
+
 func init() {
-	configCmd.AddCommand(listCmd)
+	configCmd.AddCommand(configListCmd)
+	configCmd.AddCommand(configSetCmd)
+
+	configSetCmd.AddCommand(configSetProviderCmd)
+	configSetCmd.AddCommand(configSetModelCmd)
+
 	rootCmd.AddCommand(configCmd)
 }
