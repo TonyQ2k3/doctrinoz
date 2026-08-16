@@ -12,6 +12,12 @@ go build
 go build -o doctrinoz
 ```
 
+# Install locally
+
+```powershell
+go install github.com/TonyQ2k3/doctrinoz@latest
+```
+
 # Usage
 
 ```powershell
@@ -19,9 +25,8 @@ go build -o doctrinoz
 $Env:DOCTRINOZ_API_KEY="myapikey"
 
 # Initialize (Create YAML and state directory)
-.\doctrinoz.exe init path/to/your_repo
+doctrinoz init path/to/your_repo
 
 # Generate documentations
-.\doctrinoz.exe generate path/to/your_repo
-
+doctrinoz generate path/to/your_repo
 ```
