@@ -211,7 +211,7 @@ toggle.name = "Switch to light mode"
 # - https://zensical.org/docs/authoring/icons-emojis/#search
 # ----------------------------------------------------------------------------
 [project.theme.icon]
-logo = "lucide/file-code"
+logo = "lucide/scroll"
 
 # ----------------------------------------------------------------------------
 # The "extra" section contains miscellaneous settings.

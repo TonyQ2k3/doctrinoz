@@ -2,7 +2,7 @@
 icon: lucide/rocket
 ---
 
-## Installation
+# Installation
 
 The recommended way to install Doctrinoz is via `go install`
 

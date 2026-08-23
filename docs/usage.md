@@ -5,6 +5,7 @@ icon: lucide/astroid
 ## Get an API Key
 
 In order to use Doctrinoz, you need your own AI provider's API key.
+
 + [OpenRouter](https://openrouter.ai/settings/keys)
 
 Once you've done setting up your key, you can set it with an environment variable
@@ -15,6 +16,11 @@ $Env:DOCTRINOZ_API_KEY="myapikey"
 # Linux
 export DOCTRINOZ_API_KEY="myapikey"
 ```
+
+!!! note "Note"
+
+    At the moment, Doctrinoz only supports OpenRouter.
+    More model providers/aggregators will be added in future updates.
 
 ## Initialization
 

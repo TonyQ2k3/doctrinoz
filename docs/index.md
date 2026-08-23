@@ -2,7 +2,7 @@
 icon: lucide/info
 ---
 
-## About
+# About
 
 Doctrinoz is a Go‑based CLI tool that generates and maintains a agent‑optimized wiki (Markdown) for a codebase.
 
