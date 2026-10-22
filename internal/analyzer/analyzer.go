@@ -139,6 +139,12 @@ var sourceExts = map[string]string{
 
 func isSourceFile(path string) bool {
 	base := strings.ToLower(filepath.Base(path))
+
+	// Ignore md output
+	if base == "agent.md" {
+		return false
+	}
+
 	if base == "dockerfile" || base == "makefile" || base == "jenkinsfile" {
 		return true
 	}
