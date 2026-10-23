@@ -76,14 +76,13 @@ func AnalyzeRepo(repoPath string, ignorePatterns []string) ([]Module, error) {
 func AffectedModules(modules []Module, changedFiles []string) []Module {
 	changed := map[string]struct{}{}
 	for _, f := range changedFiles {
-		changed[f] = struct{}{}
-		changed[filepath.Dir(f)] = struct{}{}
+		changed[filepath.ToSlash(f)] = struct{}{}
 	}
 
 	var affected []Module
 	for _, m := range modules {
 		for _, f := range m.Files {
-			if _, ok := changed[f]; ok {
+			if _, ok := changed[filepath.ToSlash(f)]; ok {
 				affected = append(affected, m)
 				break
 			}
@@ -139,6 +138,12 @@ var sourceExts = map[string]string{
 
 func isSourceFile(path string) bool {
 	base := strings.ToLower(filepath.Base(path))
+
+	// Ignore md output
+	if base == "agent.md" {
+		return false
+	}
+
 	if base == "dockerfile" || base == "makefile" || base == "jenkinsfile" {
 		return true
 	}

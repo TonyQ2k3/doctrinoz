@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/TonyQ2k3/doctrinoz/internal/config"
 )
@@ -19,7 +20,7 @@ type OpenRouterProvider struct {
 func NewOpenRouter(cfg config.Config) *OpenRouterProvider {
 	return &OpenRouterProvider{
 		cfg:    &cfg,
-		client: &http.Client{},
+		client: &http.Client{Timeout: 5 * time.Minute},
 	}
 }
 

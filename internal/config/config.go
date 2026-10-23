@@ -111,7 +111,7 @@ func Load() (*Config, error) {
 
 func defaultIgnorePatterns() []string {
 	return []string{
-		"node_modules/", ".git/", "dist/", "build/", ".doc.yaml",
+		"node_modules/", ".git/", "dist/", "build/", ".doc.yaml", ".venv", ".env", ".cache",
 	}
 }
 

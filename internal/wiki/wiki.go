@@ -3,9 +3,11 @@ package wiki
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -118,12 +120,12 @@ func Generate(repoPath string, cfg *config.Config, force bool) error {
 			mu.Lock()
 			defer mu.Unlock()
 			if err != nil {
-				genErr = fmt.Errorf("module %s: %w", m.Path, err)
+				genErr = errors.Join(genErr, fmt.Errorf("module %s: %w", m.Path, err))
 				bar.Add(1)
 				return
 			}
 			if writeErr := writeAgentMD(repoPath, m.Path, content); writeErr != nil {
-				genErr = writeErr
+				genErr = errors.Join(genErr, writeErr)
 			} else {
 				state.PageCommits[m.Path] = headCommit
 			}
@@ -133,6 +135,7 @@ func Generate(repoPath string, cfg *config.Config, force bool) error {
 
 	wg.Wait()
 	if genErr != nil {
+		_ = saveState(repoPath, state) // Keep per-page progress even on error
 		return genErr
 	}
 
@@ -207,12 +210,12 @@ func Update(repoPath string, cfg *config.Config) error {
 			mu.Lock()
 			defer mu.Unlock()
 			if err != nil {
-				updateErr = fmt.Errorf("updating %s: %w", m.Path, err)
+				updateErr = errors.Join(updateErr, fmt.Errorf("updating %s: %w", m.Path, err))
 				bar.Add(1)
 				return
 			}
 			if writeErr := writeAgentMD(repoPath, m.Path, content); writeErr != nil {
-				updateErr = writeErr
+				updateErr = errors.Join(updateErr, writeErr)
 			} else {
 				state.PageCommits[m.Path] = headCommit
 			}
@@ -222,6 +225,7 @@ func Update(repoPath string, cfg *config.Config) error {
 
 	wg.Wait()
 	if updateErr != nil {
+		_ = saveState(repoPath, state) // Keep per-page progress even on error
 		return updateErr
 	}
 
@@ -357,7 +361,7 @@ func saveState(repoPath string, s *state) error {
 
 func appendToGitignore(gitignorePath, entry string) {
 	content, _ := os.ReadFile(gitignorePath)
-	if len(content) > 0 && !contains(string(content), entry) {
+	if len(content) > 0 && !strings.Contains(string(content), entry) {
 		f, err := os.OpenFile(gitignorePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 		if err == nil {
 			defer f.Close()
@@ -366,29 +370,14 @@ func appendToGitignore(gitignorePath, entry string) {
 	}
 }
 
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr ||
-		len(s) > 0 && (s[:len(substr)] == substr ||
-			len(s) > len(substr) && containsAt(s, substr)))
-}
-
-func containsAt(s, sub string) bool {
-	for i := 0; i <= len(s)-len(sub); i++ {
-		if s[i:i+len(sub)] == sub {
-			return true
-		}
-	}
-	return false
-}
-
 func filterChangedForModule(changedFiles []string, m analyzer.Module) []string {
 	moduleSet := map[string]struct{}{}
 	for _, f := range m.Files {
-		moduleSet[f] = struct{}{}
+		moduleSet[filepath.ToSlash(f)] = struct{}{}
 	}
 	var result []string
 	for _, f := range changedFiles {
-		if _, ok := moduleSet[f]; ok {
+		if _, ok := moduleSet[filepath.ToSlash(f)]; ok {
 			result = append(result, f)
 		}
 	}
