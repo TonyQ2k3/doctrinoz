@@ -3,6 +3,7 @@ package wiki
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -119,12 +120,12 @@ func Generate(repoPath string, cfg *config.Config, force bool) error {
 			mu.Lock()
 			defer mu.Unlock()
 			if err != nil {
-				genErr = fmt.Errorf("module %s: %w", m.Path, err)
+				genErr = errors.Join(genErr, fmt.Errorf("module %s: %w", m.Path, err))
 				bar.Add(1)
 				return
 			}
 			if writeErr := writeAgentMD(repoPath, m.Path, content); writeErr != nil {
-				genErr = writeErr
+				genErr = errors.Join(genErr, writeErr)
 			} else {
 				state.PageCommits[m.Path] = headCommit
 			}
@@ -134,6 +135,7 @@ func Generate(repoPath string, cfg *config.Config, force bool) error {
 
 	wg.Wait()
 	if genErr != nil {
+		_ = saveState(repoPath, state) // Keep per-page progress even on error
 		return genErr
 	}
 
@@ -208,12 +210,12 @@ func Update(repoPath string, cfg *config.Config) error {
 			mu.Lock()
 			defer mu.Unlock()
 			if err != nil {
-				updateErr = fmt.Errorf("updating %s: %w", m.Path, err)
+				updateErr = errors.Join(updateErr, fmt.Errorf("updating %s: %w", m.Path, err))
 				bar.Add(1)
 				return
 			}
 			if writeErr := writeAgentMD(repoPath, m.Path, content); writeErr != nil {
-				updateErr = writeErr
+				updateErr = errors.Join(updateErr, writeErr)
 			} else {
 				state.PageCommits[m.Path] = headCommit
 			}
@@ -223,6 +225,7 @@ func Update(repoPath string, cfg *config.Config) error {
 
 	wg.Wait()
 	if updateErr != nil {
+		_ = saveState(repoPath, state) // Keep per-page progress even on error
 		return updateErr
 	}
 
