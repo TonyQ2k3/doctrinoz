@@ -75,7 +75,10 @@ func Load() (*Config, error) {
 		model = defaults.Model
 	}
 
-	apiKey := os.Getenv("DOCTRINOZ_API_KEY")
+	apiKey := viper.GetString("api_key")
+	if apiKey == "" {
+		apiKey = os.Getenv("DOCTRINOZ_API_KEY")
+	}
 	if apiKey == "" {
 		var err error
 		apiKey, err = readSecretKey(provider)
