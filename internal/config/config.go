@@ -201,6 +201,21 @@ func readSecretKey(provider string) (string, error) {
 	return secretConfig.GetString(fmt.Sprintf("keys.%s", provider)), nil
 }
 
+// Prevents API Key from being written into YAML
+func writeConfigWithoutAPIKey(path string) error {
+	settings := viper.AllSettings()
+	delete(settings, "api_key")
+
+	configFile := viper.New()
+	configFile.SetConfigType("yaml")
+
+	// copy all configs except api_key
+	for key, value := range settings {
+		configFile.Set(key, value)
+	}
+	return configFile.WriteConfigAs(path)
+}
+
 // SetKey persists an API key in the user's secret config file.
 func SetKey(provider, key string) error {
 	if _, ok := ProviderDefaults[provider]; !ok {
@@ -252,7 +267,7 @@ accepted providers are:
 	path := ".doc.yaml"
 	viper.Set("provider", providerName)
 
-	if err := viper.WriteConfigAs(path); err != nil {
+	if err := writeConfigWithoutAPIKey(path); err != nil {
 		return fmt.Errorf("Writing config: %w", err)
 	}
 
@@ -264,7 +279,7 @@ func SetModel(modelName string) error {
 	path := ".doc.yaml"
 	viper.Set("model", modelName)
 
-	if err := viper.WriteConfigAs(path); err != nil {
+	if err := writeConfigWithoutAPIKey(path); err != nil {
 		return fmt.Errorf("Writing config: %w", err)
 	}
 
