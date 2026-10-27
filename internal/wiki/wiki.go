@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
@@ -28,6 +27,11 @@ const (
 func Init(repoPath string, cfg *config.Config) error {
 	if !git.IsGitRepo(repoPath) {
 		return fmt.Errorf("%s is not a git repository", repoPath)
+	}
+
+	secretConfigPath, err := config.EnsureSecretConfig()
+	if err != nil {
+		return err
 	}
 
 	stateFullPath := filepath.Join(repoPath, stateDir)
@@ -59,10 +63,11 @@ ignore_patterns:
 	}
 
 	// Add .doc to .gitignore.
-	gitignorePath := filepath.Join(repoPath, ".gitignore")
-	appendToGitignore(gitignorePath, stateDir)
+	// gitignorePath := filepath.Join(repoPath, ".gitignore")
+	// appendToGitignore(gitignorePath, stateDir)
 
 	color.Green("✓ doctrinoz initialised in %s", repoPath)
+	color.Green("✓ API Key config: %s\n", secretConfigPath)
 	color.Cyan("  Run 'doctrinoz generate' to create the initial wiki.")
 	return nil
 }
@@ -359,16 +364,16 @@ func saveState(repoPath string, s *state) error {
 	return os.WriteFile(filepath.Join(repoPath, stateFile), data, 0o644)
 }
 
-func appendToGitignore(gitignorePath, entry string) {
-	content, _ := os.ReadFile(gitignorePath)
-	if len(content) > 0 && !strings.Contains(string(content), entry) {
-		f, err := os.OpenFile(gitignorePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
-		if err == nil {
-			defer f.Close()
-			f.WriteString("\n# doctrinoz state\n" + entry + "\n")
-		}
-	}
-}
+// func appendToGitignore(gitignorePath, entry string) {
+// 	content, _ := os.ReadFile(gitignorePath)
+// 	if len(content) > 0 && !strings.Contains(string(content), entry) {
+// 		f, err := os.OpenFile(gitignorePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+// 		if err == nil {
+// 			defer f.Close()
+// 			f.WriteString("\n# doctrinoz state\n" + entry + "\n")
+// 		}
+// 	}
+// }
 
 func filterChangedForModule(changedFiles []string, m analyzer.Module) []string {
 	moduleSet := map[string]struct{}{}
