@@ -36,7 +36,12 @@ var ProviderDefaults = map[string]struct {
 	"openrouter": {
 		Model:   "openrouter/free",
 		BaseURL: "https://openrouter.ai/api/v1",
-		EnvKey:  "",
+		EnvKey:  "OPENROUTER_API_KEY",
+	},
+	"openai": {
+		Model:   "gpt-6-astra",
+		BaseURL: "https://api.openai.com/v1",
+		EnvKey:  "OPENAI_API_KEY",
 	},
 }
 
@@ -77,7 +82,12 @@ func Load() (*Config, error) {
 
 	apiKey := viper.GetString("api_key")
 	if apiKey == "" {
-		apiKey = os.Getenv("DOCTRINOZ_API_KEY")
+		if defaults.EnvKey != "" {
+			apiKey = os.Getenv(defaults.EnvKey)
+		}
+	}
+	if apiKey == "" {
+		apiKey = os.Getenv("OPENROUTER_API_KEY")
 	}
 	if apiKey == "" {
 		var err error

@@ -7,20 +7,31 @@ icon: lucide/astroid
 In order to use Doctrinoz, you need your own AI provider's API key.
 
 + [OpenRouter](https://openrouter.ai/settings/keys)
++ [OpenAI](https://platform.openai.com/api-keys)
 
-Once you've done setting up your key, you can set it with an environment variable
+Select a provider for generation:
+
 ```shell
-# Windows/Powershell
-$Env:DOCTRINOZ_API_KEY="myapikey"
-
-# Linux
-export DOCTRINOZ_API_KEY="myapikey"
+doctrinoz config set --provider openrouter
 ```
 
-!!! note "Note"
+For OpenRouter, set `OPENROUTER_API_KEY`. For OpenAI, set `OPENAI_API_KEY`:
 
-    At the moment, Doctrinoz only supports OpenRouter.
-    More model providers/aggregators will be added in future updates.
+```shell
+# Windows/Powershell
+$Env:OPENAI_API_KEY="my-openai-api-key"
+$Env:OPENROUTER_API_KEY="my-openrouter-api-key"
+
+# Linux
+export OPENAI_API_KEY="my-openai-api-key"
+export OPENROUTER_API_KEY="my-openrouter-api-key"
+```
+
+OpenRouter defaults to the `openrouter/free` model. Set a different model with:
+
+```shell
+doctrinoz config set --model <model-name>
+```
 
 ## Initialization
 

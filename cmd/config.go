@@ -4,6 +4,8 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/TonyQ2k3/doctrinoz/internal/config"
 	"github.com/spf13/cobra"
 )
@@ -30,21 +32,55 @@ var configListCmd = &cobra.Command{
 var configSetCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Set a configuration value",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		provider, _ := cmd.Flags().GetString("provider")
+		model, _ := cmd.Flags().GetString("model")
+		apiKey, _ := cmd.Flags().GetString("api-key")
+
+		providerChanged := cmd.Flags().Changed("provider")
+		modelChanged := cmd.Flags().Changed("model")
+		apiKeyChanged := cmd.Flags().Changed("api-key")
+
+		if apiKeyChanged && provider == "" {
+			return fmt.Errorf("--provider is required when setting --api-key")
+		}
+
+		if apiKeyChanged {
+			if err := config.SetKey(provider, apiKey); err != nil {
+				return err
+			}
+		}
+		// Write provider config but not API key into .doc.yaml
+		// --provider and --api-key being set at the same time only update API key, not the provider
+		if providerChanged && !apiKeyChanged {
+			if err := config.SetProvider(provider); err != nil {
+				return err
+			}
+		}
+		if modelChanged {
+			if err := config.SetModel(model); err != nil {
+				return err
+			}
+		}
+		return nil
+	},
 }
 
 var configSetProviderCmd = &cobra.Command{
-	Use:   "provider <name>",
-	Short: "Set your model provider",
-	Args:  cobra.ExactArgs(1),
+	Use:        "provider <name>",
+	Short:      "Set your model provider",
+	Deprecated: "Use 'config set --provider <provider-name>' instead.",
+	Args:       cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return config.SetProvider(args[0])
 	},
 }
 
 var configSetModelCmd = &cobra.Command{
-	Use:   "model <name>",
-	Short: "Set your model used for doc generation",
-	Args:  cobra.ExactArgs(1),
+	Use:        "model <name>",
+	Short:      "Set your model used for doc generation",
+	Deprecated: "Use 'config set --model <model-name>' instead.",
+	Args:       cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return config.SetModel(args[0])
 	},
