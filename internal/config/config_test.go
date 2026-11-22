@@ -96,3 +96,26 @@ func TestConfigSettersDoNotWriteAPIKey(t *testing.T) {
 		})
 	}
 }
+
+func TestLoadOpenAIProviderUsesOpenAIAPIKey(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.Set("provider", "openai")
+
+	t.Setenv("OPENAI_API_KEY", "openai-test-key")
+	t.Setenv("OPENROUTER_API_KEY", "")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.APIKey != "openai-test-key" {
+		t.Errorf("APIKey = %q, want OPENAI_API_KEY value", cfg.APIKey)
+	}
+	if cfg.BaseURL != "https://api.openai.com/v1" {
+		t.Errorf("BaseURL = %q, want OpenAI API base URL", cfg.BaseURL)
+	}
+	if cfg.Model != "gpt-6-astra" {
+		t.Errorf("Model = %q, want OpenAI default model", cfg.Model)
+	}
+}

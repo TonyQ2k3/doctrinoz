@@ -34,8 +34,8 @@ func New(cfg *config.Config) (Provider, error) {
 	switch cfg.Provider {
 	case "openrouter":
 		return NewOpenRouter(*cfg), nil
-	// case "openai":
-	// 	return NewOpenAI(cfg), nil
+	case "openai":
+		return NewOpenAI(*cfg), nil
 	// case "anthropic":
 	// 	return NewAnthropic(cfg), nil
 	// case "local":
